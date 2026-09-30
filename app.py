@@ -26,3 +26,10 @@ class Device(BaseModel):
 async def get_devices():
     device_list = list(devices.find({}, {"_id": 0}))
     return device_list
+
+@app.get("/devices/{device_name}")
+async def get_device(device_name: str):
+    device = devices.find_one({"name": device_name}, {"_id": 0})
+    if device is None:
+        raise HTTPException(status_code=404, detail=f"No device called {device_name} found")
+    return device
