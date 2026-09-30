@@ -33,3 +33,10 @@ async def get_device(device_name: str):
     if device is None:
         raise HTTPException(status_code=404, detail=f"No device called {device_name} found")
     return device
+
+@app.post("/devices", status_code=201)
+async def create_device(device: Device):
+    if devices.find_one({"name": device.name}):
+        raise HTTPException(status_code=409, detail=f"Device called {device.name} already exists")
+    devices.insert_one(device.model_dump())
+    return {"message": "Device created successfully"}
