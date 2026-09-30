@@ -40,3 +40,10 @@ async def create_device(device: Device):
         raise HTTPException(status_code=409, detail=f"Device called {device.name} already exists")
     devices.insert_one(device.model_dump())
     return {"message": "Device created successfully"}
+
+@app.put("/devices/{device_name}")
+async def update_device(device_name: str, device: Device):
+    result = devices.update_one({"name": device_name}, {"$set": device.model_dump()})
+    if result.matched_count == 0:
+        raise HTTPException(status_code=404, detail=f"No device called {device_name} found")
+    return {"message": "Device updated successfully"}
